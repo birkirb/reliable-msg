@@ -67,7 +67,7 @@ module ReliableMsg #:nodoc:
 
   class EvaluationContext #:nodoc:
 
-    instance_methods.each { |name| undef_method name unless name =~ /^(__.*__)|instance_eval$/ }
+    instance_methods.each { |name| undef_method name unless name =~ /^(__.*__)|instance_eval|object_id$/ }
 
     def initialize(headers)
       @headers = headers
