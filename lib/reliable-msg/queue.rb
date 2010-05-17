@@ -329,7 +329,7 @@ module ReliableMsg
         end
         unless load
           load = true
-          retry
+          redo
         end
       end
       return nil
