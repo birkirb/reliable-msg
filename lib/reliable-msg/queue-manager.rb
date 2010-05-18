@@ -184,14 +184,14 @@ module ReliableMsg
     def start()
       @mutex.synchronize do
         return if @@active == self
-        Thread.critical = true
+        #Thread.critical = true
         if @@active.nil?
           @@active = self
         else
-          Thread.critical = false
+          #Thread.critical = false
           raise RuntimeError, ERROR_QM_STARTED
         end
-        Thread.critical = false
+        #Thread.critical = false
 
         begin
           # Get the message store based on the configuration, or default store.
@@ -202,7 +202,7 @@ module ReliableMsg
           # Get the DRb URI from the configuration, or use the default. Create a DRb server.
           drb = Config::DEFAULT_DRB.merge(@config.drb || {})
           drb_uri = "druby://localhost:#{drb['port']}"
-          @drb_server = DRb::DRbServer.new drb_uri, self, :tcp_acl=>ACL.new(drb["acl"].split(" "), ACL::ALLOW_DENY)
+          @drb_server = DRb::DRbServer.new(drb_uri, self, :tcp_acl=>ACL.new(drb["acl"].split(" "), ACL::ALLOW_DENY))
           @logger.info format(INFO_ACCEPTING_DRB, drb_uri)
 
           # Create a background thread to stop timed-out transactions.
@@ -355,7 +355,6 @@ module ReliableMsg
       queue = args[:queue].downcase
       raise ArgumentError, ERROR_SEND_MISSING_QUEUE unless queue && queue.instance_of?(String) && !queue.empty?
 
-
       return @mutex.synchronize do
         list = @store.get_headers queue
         now = Time.now.to_i
@@ -383,20 +382,21 @@ module ReliableMsg
       # transaction. We can wrap everything with a mutex, but it's faster to
       # release the locks mutex as fast as possibe.
       message = @mutex.synchronize do
-        message = @store.get_message queue do |headers|
-          if @locks.has_key?(headers[:id])
+        message = @store.get_message queue do |block_headers|
+          headers = block_headers
+          if @locks.has_key?(block_headers[:id])
             false
           else
-            if filtered(queue, headers)
+            if filtered(queue, block_headers)
               false
             else
               case selector
                 when nil
                   true
                 when String
-                  headers[:id] == selector
+                  block_headers[:id] == selector
                 when Hash
-                  selector.all? { |name, value| headers[name] == value }
+                  selector.all? { |name, value| block_headers[name] == value }
                 else
                   raise RuntimeError, "Internal error"
               end
@@ -506,12 +506,13 @@ module ReliableMsg
       raise ArgumentError, ERROR_RETRIEVE_MISSING_TOPIC unless topic && topic.instance_of?(String) && !topic.empty?
 
       # Very simple, we really only select one message and nothing to lock.
-      message = @store.get_last topic, seen do |headers|
+      message = @store.get_last(topic, seen) do |block_headers|
+        headers = block_headers
         case selector
         when nil
           true
         when Hash
-          selector.all? { |name, value| headers[name] == value }
+          selector.all? { |name, value| block_headers[name] == value }
         else
           raise RuntimeError, "Internal error"
         end

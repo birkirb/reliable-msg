@@ -194,7 +194,7 @@ Available options:
 
         else
           raise InvalidUsage
-      end
+        end
       rescue InvalidUsage
         puts USAGE
       end

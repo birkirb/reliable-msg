@@ -316,13 +316,13 @@ module ReliableMsg
     # :call-seq:
     #   obj.next(selector) { } -> id or nil
     #
-    def next selector, &block
+    def next(selector, &block)
       load = false
       @mutex.synchronize do
         load ||= (@list.nil? || @list.empty?)
         @list = block.call() if load
         @list.each_with_index do |headers, idx|
-          if selector.match headers
+          if selector.match(headers)
             @list.delete_at idx
             return headers[:id]
           end

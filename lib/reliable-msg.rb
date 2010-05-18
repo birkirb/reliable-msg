@@ -3,7 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 module ReliableMsg
   PACKAGE = 'reliable-msg'
-  
+
   # Version number.
   module Version
     version = Gem::Specification.load(File.expand_path("../reliable-msg.gemspec", File.dirname(__FILE__))).version.to_s.split(".").map { |i| i.to_i }

@@ -89,7 +89,7 @@ module ReliableMsg
     #   selector = Queue.selector { priority >= 2 and received > Time.new.to_i - 60 }
     def self.selector(&block)
       raise ArgumentError, ERROR_NO_SELECTOR_BLOCK unless block
-      Selector.new &block
+      Selector.new(&block)
     end
 
     # Create and return a new selector based on the block expression. Same as
@@ -97,7 +97,7 @@ module ReliableMsg
     #   selector = Queue.selector { priority >= 2 and received > Time.new.to_i - 60 }
     def selector(&block)
       raise ArgumentError, ERROR_NO_SELECTOR_BLOCK unless block
-      Selector.new &block
+      Selector.new(&block)
     end
 
   private
@@ -105,7 +105,7 @@ module ReliableMsg
     # Returns the active queue manager. You can override this method to implement
     # load balancing.
     def qm()
-      if uri = @drb_uri
+      if uri = @drb_uri # Seems like a typo, there is no @drb_uri variable
         # Queue specifies queue manager's URI: use that queue manager.
         @@qm_cache[uri] ||= DRbObject.new(nil, uri)
       else
