@@ -56,12 +56,15 @@ module ReliableMsg
     #   Topic.new([name [,options]])    -> topic
     #
     def initialize(topic = nil, options = nil)
+      super()
+
       options.each do |name, value|
         raise RuntimeError, format(ERROR_INVALID_OPTION, name) unless INIT_OPTIONS.include?(name)
         instance_variable_set "@#{name.to_s}".to_sym, value
       end if options
       @topic = topic
       @seen = nil
+      @expires = nil
     end
 
 

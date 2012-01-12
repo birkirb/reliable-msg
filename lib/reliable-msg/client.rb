@@ -52,6 +52,12 @@ module ReliableMsg
     # Cache of queue managers referenced by their URI.
     @@qm_cache = {} #:nodoc:
 
+    def initialize
+      @connect_count = nil
+      @drb_uri = nil
+      @tx_timeout = nil
+    end
+
     # Returns the transaction timeout (in seconds).
     def tx_timeout()
       @tx_timeout || DEFAULT_TX_TIMEOUT

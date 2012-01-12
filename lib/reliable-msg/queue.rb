@@ -68,10 +68,18 @@ module ReliableMsg
     #   Queue.new([name [,options]])    -> queue
     #
     def initialize(queue = nil, options = nil)
+      super()
+
+      @priority = nil
+      @expires = nil
+      @delivery = nil
+      @max_deliveries = nil
+
       options.each do |name, value|
         raise RuntimeError, format(ERROR_INVALID_OPTION, name) unless INIT_OPTIONS.include?(name)
         instance_variable_set "@#{name.to_s}".to_sym, value
       end if options
+
       @queue = queue
     end
 
