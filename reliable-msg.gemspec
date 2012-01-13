@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name = 'reliable-msg'
-  spec.version = '1.2.0'
+  spec.version = '1.2.1'
   spec.summary = "Reliable messaging and persistent queues for building asynchronous applications in Ruby"
   spec.description = <<-EOF
     This package provides reliable messaging and persistent queues for

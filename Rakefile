@@ -11,8 +11,8 @@ task :default => :test
 desc "Run all test cases"
 Rake::TestTask.new do |test|
   test.verbose = true
+  #test.warning = true
   test.test_files = ['test/*.rb']
-  test.warning = true
 end
 
 # Create the documentation.
